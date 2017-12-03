@@ -1,0 +1,55 @@
+---
+title: "EDA—UserLog"
+author: "Yi Zhang ; yz3006"
+date: "12/3/2017"
+output: html_document
+---
+
+
+```{r, warning=FALSE}
+####### set your directory of userlog.samp.Rdata & logfeature.RData saved
+load("~/Desktop/fall2017-project5-proj5-grp2-master/data/userlog.samp.RData")
+load("~/Desktop/fall2017-project5-proj5-grp2-master/data/logfeature.RData")
+packages.used=c("ggplot2", "plyr", "dplyr", "tidyr","forcats","gridExtra")
+packages.needed= setdiff(packages.used,
+                         intersect(installed.packages()[,1],
+                              packages.used ))
+if(length(packages.needed)>0){
+  install.packages(packages.needed, dependencies = TRUE,  repos="http://cran.us.r-project.org")
+}
+
+library(ggplot2)
+library(plyr)
+library(dplyr)
+library(tidyr)
+library(forcats)
+library(gridExtra)
+# ggplot(logUser)+
+#   geom_histogram(aes(x=num_unq),bins = 20)+
+#   labs(x="Average # of Unique Songs Per User")
+########## Plot average number of unique songs per user VS count
+
+#par(mfrow=c(3,1))
+p1<-ggplot(userlog.samp)+
+  geom_vline(xintercept = median(userlog.samp$ave_unq), linetype=2)+
+  geom_histogram(aes(x=ave_unq),binwidth  = 1, fill="blue",alpha=0.7)+
+  labs(x="ave_unique /user/date ")
+p1
+########## plot total secs of listening per user per date VS count
+p2<-ggplot(userlog.samp)+
+  geom_vline(xintercept = median(userlog.samp$total_secs_perdate), linetype=2)+
+  geom_density(aes(total_secs_perdate), fill="yellow",alpha=0.5)+
+  labs(x="total_sces/user/date")
+p2
+p3<-userlog.samp %>%
+  gather(num_25_ave,num_50_ave,num_75_ave,num_985_ave,num_100_ave, key="slen", value="cases") %>%
+  mutate(slen=fct_relevel(factor(slen),"num_100_ave", after=Inf ))%>%
+  ggplot(aes(cases, fill=slen))+
+  geom_density(position = "stack",bw=0.05) +
+  scale_x_log10(lim=c(1,800))+
+  labs(x="Number of Songs", fill="%played")
+p3
+#grid.arrange(p1,p2,p3,nrow=3)
+
+```
+
