@@ -1,0 +1,72 @@
+---
+title: "EDA on transaction"
+author: "Xinyao Guo"
+output: html_document
+---
+### Load packages
+```{r,warning=FALSE,message=FALSE}
+#This file contains EDA on transactions data
+
+packages.used=c("ggplot2", "dplyr")
+packages.needed= setdiff(packages.used,
+                         intersect(installed.packages()[,1],
+                                   packages.used ))
+if(length(packages.needed)>0){
+  install.packages(packages.needed, dependencies = TRUE,  repos="http://cran.us.r-project.org")
+}
+
+library(ggplot2)
+library(dplyr)
+```
+
+### Load Data
+```{r,warning=FALSE,message=FALSE}
+load("D:/Fall 2017/ADS/proj 5/trans.before.aggregate.RData")
+load("D:/Fall 2017/ADS/proj 5/new.transaction.RData")
+```
+
+### EDA
+```{r,warning=FALSE,message=FALSE}
+###payment_plan_days
+sub_trans %>%
+  mutate(payment_plan_days = factor(payment_plan_days)) %>%
+  ggplot(aes(payment_plan_days, fill = payment_plan_days)) +
+  geom_bar() +
+  scale_y_sqrt() +
+  theme(legend.position = "none") +
+  labs(x = "Payment plan days")
+
+
+#Convert payment_plan_days to categorical:
+new.trans %>%
+  ggplot(aes(payment_plan_days, fill = payment_plan_days)) +
+  geom_bar() +
+  scale_y_sqrt() +
+  theme(legend.position = "none") +
+  labs(x = "Payment plan days")
+
+###amt_per_day
+ggplot(sub_trans) +
+  geom_histogram(aes(x=amt_per_day),binwidth  = 0.5, fill="blue",alpha=0.7)+
+  theme(legend.position = "none") +
+  labs(x = "Amount per day")
+
+###plan_list_price
+sub_trans %>%
+  mutate(plan_list_price = factor(plan_list_price)) %>%
+  ggplot(aes(plan_list_price, fill = plan_list_price)) +
+  geom_bar() +
+  scale_y_sqrt() +
+  theme(legend.position = "none") +
+  labs(x = "Plan list price")
+
+###actual_amount_paid
+sub_trans %>%
+  mutate(actual_amount_paid = factor(actual_amount_paid)) %>%
+  ggplot(aes(actual_amount_paid, fill = actual_amount_paid)) +
+  geom_bar() +
+  scale_y_sqrt() +
+  theme(legend.position = "none") +
+  labs(x = "Actual amount paid")
+```
+
