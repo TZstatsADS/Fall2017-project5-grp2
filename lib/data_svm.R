@@ -11,30 +11,30 @@ train_ind <- sample(seq_len(nrow(data.all)), size = smp_size)
 train <- data.all[train_ind, ]
 test <- data.all[-train_ind, ]
 
-
-# x = train[,-c(1,2)]
-# y = train[,2]
-# model = svm(x,y)
-# 
-# xtest = as.numeric(unlist(test[,-c(1,2)]))
-# ytest = test[,2]
-# 
-# pred = predict(model, xtest)
-# length(pred)
-# sum(pred == ytest)/1000
-
 train.svm<- function(traindata) {
   traindata$y<- as.factor(traindata$y)
-  model.svm<- svm(y~., data = traindata,cost=100, gamma=0.01)
+  model.svm<- svm(y~., data = traindata, probability = TRUE)
   return(model.svm)
 }
 test.svm <- function(model,test.data)
 {
-  return(predict(model,test.data,type="class"))
+  return(predict(model,test.data,probability = TRUE))
 }
 
 svm.model <- train.svm(train)
-svm.pre=test.svm(svm.model,test[,-1])
-table(svm.pre,test$y)
-accuracy = sum(svm.pre == test$y)/1000
-accuracy
+svm.pre = test.svm(svm.model,test[,-1])
+prob = attr(svm.pre,"probabilities")
+list_1 = which(test$y == 1)
+list_0 = which(test$y == 0)
+accuracy = -(sum(1*log(prob[list_1,2])) + sum(1*log(1-prob[list_0,1])))/1000
+
+# ########################################
+LogLossBinary <- function(actual, predicted, eps = 1e-15) {
+  predicted <- pmin(pmax(predicted, eps), 1-eps)
+  error<- - (sum(actual * log(predicted) + (1 - actual) * log(1 - predicted))) / length(actual)
+  return(error)
+}
+a = as.numeric(as.character(prob[,2]))
+b = as.numeric(as.character(test[,1]))
+LogLossBinary(a,b)
+
