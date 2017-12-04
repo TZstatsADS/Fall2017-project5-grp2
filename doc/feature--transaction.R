@@ -48,3 +48,8 @@ new.trans$sum_auto_renew<-as.factor(new.trans$sum_auto_renew)
 new.trans<-new.trans[,-6]
 #write.csv(new.trans,"subset_transaction.csv",row.names = F)
 save(new.trans,file = "new.transaction.RData")
+save(sub_trans,file="trans.before.aggregate.RData")
+#convert categorical variables to dummmies:
+library(dummies)
+trans_data_dummy <- dummy.data.frame(new.trans, names=c("payment_plan_days","is_discount","sum_cancel","sum_auto_renew"), sep="_")
+save(trans_data_dummy,file="trans.dummy.RData")
