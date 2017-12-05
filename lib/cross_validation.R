@@ -102,7 +102,8 @@ cv.function <- function(data, K){
 cv.function(train,K=5)  
 
 ###Results:
-
+# xgboost  adaboost     lasso         rf       svm        gbm
+# 0.1119101 0.1331458 0.1646866 0.09003919 0.1673017 0.08878825
 #From the output, we choose GBM as our final model. Random Forest also performs well.
 
 
