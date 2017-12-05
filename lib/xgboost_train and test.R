@@ -14,7 +14,7 @@ train.xgboost<-function(train.data){
   return(bst)
 }
 
-test.xgboost<-function(test.data){
+test.xgboost<-function(bst,test.data){
   testtt<-as.matrix(test.data[,-1])
   m.test <- mapply(testtt, FUN=as.numeric)
   m.test <- matrix(data=m.test, nrow=1000)
