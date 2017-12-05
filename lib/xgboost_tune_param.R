@@ -22,7 +22,7 @@ m.test <- mapply(testtt, FUN=as.numeric)
 m.test <- matrix(data=m.test, nrow=1000)
 dtrain=xgb.DMatrix(data=m[,-1],label=m[,1])
 
-
+### Parameter
 
 NROUNDS = c(500,1000)
 ETA = c(0.3)
@@ -71,8 +71,7 @@ cv.xgb(m[,-1],m[,1], 5, NROUNDS, ETA, MAX_DEPTH)
 
 cv.loss.xgboost<-LogLossBinary(test.data[,1],pred)
 
-mean(m.test[,1]==pred)
-prediction <- as.numeric(pred > 0.5)
+###Calculate Logloss Error to deal with imbalanced label
 
 LogLossBinary <- function(actual, predicted, eps = 1e-15) {
   predicted <- pmin(pmax(predicted, eps), 1-eps)
