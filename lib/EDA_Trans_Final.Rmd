@@ -1,6 +1,6 @@
 ---
 title: "EDA on transaction"
-author: "Xinyao Guo"
+author: "Xinyao Guo, Qingyun Lu"
 output: html_document
 ---
 ### Load packages
@@ -28,7 +28,7 @@ load("./data/trans.before.aggregate.RData")
 load("./data/new.transaction.RData")
 sample_id<-read_csv('./data/ids_subset.csv') # sample user
 train <- read_csv("./data/train_v2.csv") # Training data
-transaction<-read_csv("./data/transactions_v2.csv")
+load("./data/old_transaction.RData")
 
 final_train <- merge(sample_id, train)
 final_train <- merge(sample_id, train)
