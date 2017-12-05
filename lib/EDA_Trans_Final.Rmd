@@ -28,12 +28,11 @@ load("./data/trans.before.aggregate.RData")
 load("./data/new.transaction.RData")
 sample_id<-read_csv('./data/ids_subset.csv') # sample user
 train <- read_csv("./data/train_v2.csv") # Training data
-load("./data/old_transaction.RData")
 
 final_train <- merge(sample_id, train)
 final_train <- merge(sample_id, train)
 
-combined = merge(sample_id, transaction)
+combined = sub_trans
 
 combined$is_discount <- as.factor(ifelse(combined$actual_amount_paid<combined$plan_list_price,1,0))
 ### auto_renew & is_cancel
