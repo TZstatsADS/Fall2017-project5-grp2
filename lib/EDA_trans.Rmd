@@ -1,0 +1,199 @@
+---
+title: "EDA on transaction"
+author: "Xinyao Guo"
+output: html_document
+---
+### Load packages
+```{r,warning=FALSE,message=FALSE}
+#This file contains EDA on transactions data
+
+packages.used=c("ggplot2", "dplyr","tidyr")
+packages.needed= setdiff(packages.used,
+                         intersect(installed.packages()[,1],
+                                   packages.used ))
+if(length(packages.needed)>0){
+  install.packages(packages.needed, dependencies = TRUE,  repos="http://cran.us.r-project.org")
+}
+
+library(ggplot2)
+library(dplyr)
+library(readr)
+library(tidyr)
+```
+
+### Load Data & Data cleaning
+```{r,warning=FALSE,message=FALSE}
+setwd("D:/Fall 2017/ADS/fall2017-project5-proj5-grp2")
+load("./data/trans.before.aggregate.RData")
+load("./data/new.transaction.RData")
+sample_id<-read_csv('./data/ids_subset.csv') # sample user
+train <- read_csv("./data/train_v2.csv") # Training data
+transaction<-read_csv("./data/transactions_v2.csv")
+
+final_train <- merge(sample_id, train)
+final_train <- merge(sample_id, train)
+
+combined = merge(sample_id, transaction)
+
+combined$is_discount <- as.factor(ifelse(combined$actual_amount_paid<combined$plan_list_price,1,0))
+### auto_renew & is_cancel
+total_renew = as.data.frame(aggregate(combined$is_auto_renew,by=list(msno=combined$msno),sum))
+colnames(total_renew) <- c("msno","total_renew")
+
+total_cancel = as.data.frame(aggregate(combined$is_cancel,by=list(msno=combined$msno), sum))
+colnames(total_cancel) <- c("msno","total_cancel")
+
+final_combined = merge(sample_id,total_renew)
+final_combined = merge(final_combined, total_cancel)
+final_combined = final_combined[order(final_combined$msno),]
+### is_discount & sum_auto_renew update
+load("./data/data.all.Rdata")
+data.all$is_discount <- ifelse(data.all$discount==0, 0, 1)
+data.all$sum_auto_renew <- ifelse(data.all$sum_auto_renew>=3, 3, data.all$sum_auto_renew)
+#Further Data cleaning for EDA
+combined$is_auto_renew<-as.factor(combined$is_auto_renew)
+combined$is_cancel<-as.factor(combined$is_cancel)
+combined$payment_method_id<-as.factor(combined$payment_method_id)
+```
+
+### EDA
+```{r,warning=FALSE,message=FALSE}
+###payment_plan_days
+sub_trans %>%
+  mutate(payment_plan_days = factor(payment_plan_days)) %>%
+  ggplot(aes(payment_plan_days, fill = payment_plan_days)) +
+  geom_bar() +
+  scale_y_sqrt() +
+  theme(legend.position = "none") +
+  labs(x = "Payment plan days")
+
+
+#Convert payment_plan_days to categorical:
+new.trans %>%
+  ggplot(aes(payment_plan_days, fill = payment_plan_days)) +
+  geom_bar() +
+  scale_y_sqrt() +
+  theme(legend.position = "none") +
+  labs(x = "Payment plan days")
+
+###amt_per_day
+ggplot(sub_trans) +
+  geom_histogram(aes(x=amt_per_day),binwidth  = 0.5, fill="blue",alpha=0.7)+
+  theme(legend.position = "none") +
+  labs(x = "Amount per day")
+
+###plan_list_price
+sub_trans %>%
+  mutate(plan_list_price = factor(plan_list_price)) %>%
+  ggplot(aes(plan_list_price, fill = plan_list_price)) +
+  geom_bar() +
+  scale_y_sqrt() +
+  theme(legend.position = "none") +
+  labs(x = "Plan list price")
+
+###actual_amount_paid
+sub_trans %>%
+  mutate(actual_amount_paid = factor(actual_amount_paid)) %>%
+  ggplot(aes(actual_amount_paid, fill = actual_amount_paid)) +
+  geom_bar() +
+  scale_y_sqrt() +
+  theme(legend.position = "none") +
+  labs(x = "Actual amount paid")
+
+### is_cancel
+combined %>%
+  ggplot(aes(is_cancel, fill=is_cancel))+
+  geom_bar() + 
+  theme(legend.position = "none")+
+  labs(x = "is_cancel")
+
+### auto_renew 
+combined %>%
+  ggplot(aes(is_auto_renew,fill=is_auto_renew))+
+  geom_bar() +
+  theme(legend.position = "none")+
+  labs(x = "is_auto_renew")
+
+### is_discount barplot
+combined %>%
+  ggplot(aes(is_discount,fill=is_discount))+
+  geom_bar()+
+  theme(legend.position = "none")+
+  labs(x = "is_discount")
+```
+
+```{r,warning=FALSE,message=FALSE}
+Mode <- function(x){
+  ux <- unique(x)
+  ux[which.max(tabulate(match(x,ux)))]
+}
+
+get_binCI <- function(x,n) {
+  rbind(setNames(c(binom.test(x,n)$conf.int),c("lwr","upr")))
+}
+
+### auto renew & is churn
+combined %>%
+  group_by(msno) %>%
+  summarise(is_auto_renew = Mode(is_auto_renew))%>%
+  inner_join(train,by="msno") %>%
+  group_by(is_auto_renew,is_churn)%>%
+  count() %>%
+  spread(is_churn,n)%>%
+  mutate(frac_churn=`1`/(`1`+`0`)*100,
+         lwr = get_binCI(`1`,(`1`+`0`))[[1]]*100,
+         upr = get_binCI(`1`,(`1`+`0`))[[2]]*100
+  )%>%
+  ggplot(aes(is_auto_renew,frac_churn,fill=is_auto_renew))+
+  geom_col()+
+  geom_errorbar(aes(ymin=lwr,ymax=upr),width=0.5,size=0.7,color="gray30")+
+  theme(legend.position = "none")+
+  labs(x="Auto renew",y="Churn[%]")
+
+### is cancel & is churn
+combined %>%
+  group_by(msno) %>%
+  summarise(is_cancel = Mode(is_cancel))%>%
+  inner_join(train,by="msno") %>%
+  group_by(is_cancel,is_churn)%>%
+  count() %>%
+  spread(is_churn,n)%>%
+  mutate(frac_churn=`1`/(`1`+`0`)*100,
+         lwr = get_binCI(`1`,(`1`+`0`))[[1]]*100,
+         upr = get_binCI(`1`,(`1`+`0`))[[2]]*100
+  )%>%
+  ggplot(aes(is_cancel,frac_churn,fill=is_cancel))+
+  geom_col()+
+  geom_errorbar(aes(ymin=lwr,ymax=upr),width=0.5,size=0.7,color="gray30")+
+  theme(legend.position = "none")+
+  labs(x="Cancelled",y="Churn[%]")
+
+### is discount & is churn
+new.trans %>%
+  group_by(msno) %>%
+  summarise(is_discount = Mode(is_discount))%>%
+  inner_join(train,by="msno") %>%
+  group_by(is_discount,is_churn)%>%
+  count() %>%
+  spread(is_churn,n)%>%
+  mutate(frac_churn=`1`/(`1`+`0`)*100,
+         lwr = get_binCI(`1`,(`1`+`0`))[[1]]*100,
+         upr = get_binCI(`1`,(`1`+`0`))[[2]]*100
+  )%>%
+  ggplot(aes(is_discount,frac_churn,fill=is_discount))+
+  geom_col()+
+  geom_errorbar(aes(ymin=lwr,ymax=upr),width=0.5,size=0.7,color="gray30")+
+  theme(legend.position = "none")+
+  labs(x="Discount",y="Churn[%]")
+
+### member duration
+new.trans %>%
+  mutate(member_duration = factor(member_duration)) %>%
+  ggplot(aes(member_duration, fill = member_duration)) +
+  geom_bar() +
+  scale_y_sqrt() +
+  theme(legend.position = "none") +
+  labs(x = "member duration")
+
+
+```
