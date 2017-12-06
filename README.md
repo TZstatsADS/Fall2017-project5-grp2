@@ -12,7 +12,7 @@ Term: Fall 2017
 	+ Sijian Xuan (sx2195)
 	+ Yi Zhang    (yz3006)
 + Project summary: 
-KKBox is a leading music streaming service in Asia. The objective of our project is to built an algorithm that predicts whether a subscription user will churn after their membership expiration for KKBOX. The data we used consists of three kinds of features: User information in members, transactions and user logs. Before going into the analysis of features, we merged all datasets and sample 5000 commom users as our data. Our pipeline is broken down into 4 steps. <br />
+KKBox is a leading music streaming service in Asia. The objective of our project is to build an algorithm that predicts whether a subscription user will churn after expiration of their KKBOX membership. The data we used consists of three kinds of features: User information in members, transactions and user logs. Before going into the analysis of features, we merged all datasets and sample 5000 commom users as our data. Our pipeline is broken down into 7 steps. <br />
 
 + Step 1: Feature Analysis on EDA <br />
 ![image](figs/Rplot4.png) 
