@@ -26,7 +26,7 @@ KKBox is a leading music streaming service in Asia. The objective of our project
 ![image](figs/result1.png) <br />
 +Step 5: Feature Importance for Random Forest and XGBoost <br />
 ![image](figs/Rplot8.png)  <br />
-+Step 6: Reduce the features and test the model
++Step 6: Reduce the features and test the model <br />
 ![image](figs/result2.png) <br />
 +Step 7: Further Investigation
 
