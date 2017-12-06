@@ -3,7 +3,8 @@
 ###################################################################
 library("gbm")
 train.gbm<-function(train_data) {
-  
+  train_data<-train_data[,-1]
+  train_data[,1]<- as.numeric(as.character(train_data[,1]))
   gbmModel<-gbm(is_churn~., data = train_data,
                 distribution = "bernoulli",
                 n.trees = 1000,
@@ -16,6 +17,8 @@ train.gbm<-function(train_data) {
 }
 
 test.gbm<-function(fit_train, test_data) {
+  test_data<-test_data[,-1]
+  test_data[,1]<- as.numeric(as.character(test_data[,1]))
   gbmTrainPrediction<-predict(fit_train$model.fit, 
                               test_data,
                               n.trees=fit_train$best_ntrees,
@@ -24,3 +27,6 @@ test.gbm<-function(fit_train, test_data) {
   return(gbmTrainPrediction)
 }
 #######################################################################
+
+
+
