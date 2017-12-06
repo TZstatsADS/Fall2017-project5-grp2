@@ -15,7 +15,7 @@ Term: Fall 2017
 KKBox is a leading music streaming service in Asia. The objective of our project is to built an algorithm that predicts whether a subscription user will churn after their membership expiration for KKBOX. The data we used consists of three kinds of features: User information in members, transactions and user logs. Before going into the analysis of features, we merged all datasets and sample 5000 commom users as our data. Our pipeline is broken down into 4 steps.
 
       
-+Step1: Feature Analysis on EDA
++Step1: Feature Analysis on EDA \n
  ![image](figs/Rplot4.png)
 +Step2: Split the dataset and set the evaluation metric
 
