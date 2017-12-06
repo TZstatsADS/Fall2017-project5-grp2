@@ -8,7 +8,7 @@ train.xgboost<-function(train.data){
   nround<-500
   trainnn<-as.matrix(train.data[,-1])
   m <- mapply(trainnn, FUN=as.numeric)
-  m <- matrix(data=m, nrow=3200)
+  m <- matrix(data=m, nrow=nrow(train.data))
   dtrain=xgb.DMatrix(data=m[,-1],label=m[,1])
   xgboost.bst<-xgb.train(data = dtrain,  param = param, nrounds = nround)
   return(xgboost.bst)
@@ -17,7 +17,7 @@ train.xgboost<-function(train.data){
 test.xgboost<-function(fit,test.data){
   testtt<-as.matrix(test.data[,-1])
   m.test <- mapply(testtt, FUN=as.numeric)
-  m.test <- matrix(data=m.test, nrow=800)
+  m.test <- matrix(data=m.test, nrow=nrow(test.data))
   xgboost.pred<-predict(fit, newdata = m.test[,-1]) 
   return(xgboost.pred)
 }
