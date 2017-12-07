@@ -30,7 +30,7 @@ KKBox is a leading music streaming service in Asia. The objective of our project
 
 + Step 1: Feature Analysis on EDA <br />
 ![image](figs/pmt.PNG) 
-![image](figs/Rplot7.png) <br />
+![image](figs/songs.png) <br />
 For more detailed EDA plots, please refer to our Main file in doc. <br />
 
 + Step 2: Split the dataset and set the evaluation metric <br />
