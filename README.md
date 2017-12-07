@@ -42,14 +42,14 @@ For more detailed EDA plots, please refer to our Main file in doc. <br />
  Advanced Models: Random Forest, GBM, XGBoost, AdaBoost, Lasso <br />
  
 + Step 4: Cross Validation to select the best model <br />
-![image](figs/original model.png) <br />
+![image](figs/original.png) <br />
 
 + Step 5: Feature Importance using Random Forest and XGBoost <br />
 ![image](figs/Rplot8.png)  <br />
 
 + Step 6: Reduce the features and test the model <br />
 	+ Ignore Gender, Registration Method in the Member dataset; Ignore Discount in the Transaction dataset--Better fit. <br />
-![image](figs/simple model1.png) <br />
+![image](figs/simple.png) <br />
 	+ Ignore Gender, Registration Method in the Member dataset; Ignore Discount, Actual Amount Paid in the Transaction dataset--Worse fit. <br />
 	+ Conclusion: choose Random Forest model on data with 3 reduced features as final model. <br />
 
